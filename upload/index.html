@@ -36,8 +36,37 @@
 	<div class="father">
 		<div class="son"></div>
 	</div>		
-	<script>	
-	function  upload(url,inputObj,progressObj,imgObj){   //4个参数 php名称，文件域名称、进度条名称、缩略图名称、
+	<script>
+		////	 最简单不限制传法
+//	    window.onload=function () {
+//	        var input=document.querySelector("input");
+//	        var box1=document.querySelector(".son");
+//	        input.onchange=function () {//值发生
+//	            var data=this.files[0];
+//	
+//	
+//		        var formObj=new FormData();
+//		        formObj.append("file",data);
+//		
+//		        var ajax=new XMLHttpRequest();
+//		        ajax.onload=function () {
+//		            console.log(ajax.response);
+//		        }
+//		        ajax.upload.onprogress=function (e) {
+//		            var total=e.total;
+//		            var loaded=e.loaded;
+//		            var scale=loaded/total*100;
+//		            console.log(scale);
+//		            box1.style.width=scale+"%";
+//		            box1.innerHTML=scale.toFixed(2)+"%";
+//		        }
+//		        ajax.open("post","upload.php");
+//		        ajax.send(formObj);
+//	        }
+//	    }
+/****************************************************************************************/
+//多功能式传法
+function  upload(url,inputObj,progressObj,imgObj){   //4个参数 php名称，文件域名称、进度条名称、缩略图名称、
 	    var inputObj=inputObj||{};
 	    if(inputObj.nodeName=="INPUT"){      //判断传入的是文本还是字符串  
 	        this.inputObj=inputObj;
