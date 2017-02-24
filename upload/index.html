@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style>
+		.father{
+			width:200px;
+			height: 20px;
+			border: 1px solid #ccc;
+			position: relative;
+			display: block;
+		}
+		.son{
+			width: 0px;
+			height: 100%;
+			position: absolute;left: 0px;top: 0px;
+			background: red;
+		}
+		.img{
+			width:150px;
+			height: 150px;
+			background: #ccc;
+		}
+		.img img{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+	<body>	
+<!--	//ajax另外的用法  上传文件、视频、图片-->
+	<input type="file" name="file" class="file" multiple="multiple" />
+	<!--<input type="submit" name="" id="" value="提交" />-->	
+	<div class="img"><img src="" alt="" /></div>
+	<div class="father">
+		<div class="son"></div>
+	</div>		
+	<script>	
+	function  upload(url,inputObj,progressObj,imgObj){   //4个参数 php名称，文件域名称、进度条名称、缩略图名称、
+	    var inputObj=inputObj||{};
+	    if(inputObj.nodeName=="INPUT"){      //判断传入的是文本还是字符串  
+	        this.inputObj=inputObj;
+	    }else if(typeof inputObj=="string"){
+	        this.inputObj=document.querySelector(inputObj);
+	    }
+	
+	    var progressObj=progressObj||{};
+	    if(progressObj.nodeName=="DIV"){
+	        this.progressObj=progressObj;
+	    }else if(typeof progressObj=="string"){
+	        this.progressObj=document.querySelector(progressObj);
+	    }
+	    var imgObj=imgObj||{};
+	    if(imgObj.nodeName=="IMG"){
+	        this.imgObj=imgObj;
+	    }else if(typeof imgObj=="string"){
+	        this.imgObj=document.querySelector(imgObj);
+	    }
+	    this.type=["jpeg","jpg","png","gif"];
+	    this.size=1024*1024*20;
+	    this.uploadName="file";
+	    this.url=url;
+	}
+	upload.prototype={          //原型
+	    up:function(callback){          //传入回调函数
+	        if(this.url){
+	            this.callback=callback;
+	            this.getCon();
+	        }else{
+	            alert("请指定路径");
+	        }
+	    },
+	    getCon:function(){            //获得文件域内容
+	        var that=this;
+	        this.inputObj.onchange=function(){  //值发生改变并失去焦点时
+	            that.data=this.files[0];
+	            var read=new FileReader();	   //解析文件 把它当做一个对象去解析
+	            read.onload=function(e){
+	                that.imgObj.src=e.target.result;
+	            }
+	            read.readAsDataURL(that.data);   //异步的
+	            
+	            if(that.check()){            
+	                that.upfile();
+	            }
+	        }
+	    },
+	    check:function(){           //检查格式  //判断传入文件的大小、格式、
+	        var that=this;
+	        console.log(that.data);
+	        var data=that.data;
+	        var size=data.size;
+	        var extname=data.name.substr(data.name.lastIndexOf(".")+1).toLowerCase();
+	        if(size>that.size){
+	            alert("文件太大");
+	            return false;
+	        }
+	        var flag=false;
+	        for(var i=0;i<that.type.length;i++){
+	            if(that.type[i]==extname){
+	                flag=true;
+	                break;
+	            }
+	        }
+	        if(!flag){
+	            alert("格式不符")
+	            return false
+	        }
+	        return true;
+	    },
+	    upfile:function(){       //上传 用ajax方式
+	        var that=this;
+	        var ajax=new XMLHttpRequest();
+	        var form=new FormData();
+	        form.append(this.uploadName,this.data);
+	        ajax.upload.onprogress=function(e){   //上传开始事件
+	            var total=e.total;
+	            var loaded=e.loaded;
+	            var scale=loaded/total*100;
+	            that.progressObj.style.width=scale+"%";
+	        }
+	        ajax.onload=function(){    //php返回成功后事件
+	            that.callback(ajax.response);
+	        }
+	        ajax.open("post",that.url);
+	        ajax.send(form);
+	    }
+	}		
+	window.onload=function(){
+			var obj=new upload("upload.php",".file",".son",".img img");
+			obj.up(function(){
+				alert("成功！")
+			});
+	}		
+		
+		
+	</script>	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</body>
+</html>
